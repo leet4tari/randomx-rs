@@ -122,10 +122,15 @@ fn main() {
                 .arg("-D")
                 .arg("CMAKE_CXX_FLAGS='-arch arm64'")
                 .arg("-D")
-                .arg("CMAKE_OSX_SYSROOT=").arg(env.to_str().unwrap()
+                .arg("CMAKE_OSX_SYSROOT=")
+                .arg(env.as_str())
                 .arg(repo_dir.to_str().unwrap())
                 .output()
                 .expect("failed to execute CMake");
+            println!("status: {}", c.status);
+            std::io::stdout().write_all(&c.stdout).unwrap();
+            std::io::stderr().write_all(&c.stderr).unwrap();
+            assert!(c.status.success());
         } else {
             let c = Command::new("cmake")
                 .arg("-D")
@@ -143,12 +148,11 @@ fn main() {
                 .arg(repo_dir.to_str().unwrap())
                 .output()
                 .expect("failed to execute CMake");
+            println!("status: {}", c.status);
+            std::io::stdout().write_all(&c.stdout).unwrap();
+            std::io::stderr().write_all(&c.stderr).unwrap();
+            assert!(c.status.success());
         }
-
-        println!("status: {}", c.status);
-        std::io::stdout().write_all(&c.stdout).unwrap();
-        std::io::stderr().write_all(&c.stderr).unwrap();
-        assert!(c.status.success());
 
         let m = Command::new("cmake")
             .arg("--build")
