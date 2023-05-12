@@ -122,8 +122,8 @@ fn main() {
                 .arg("-D")
                 .arg("CMAKE_CXX_FLAGS='-arch arm64'")
                 .arg("-D")
-                .arg("CMAKE_OSX_SYSROOT=")
-                .arg(env.as_str())
+                .arg("CMAKE_OSX_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk")
+//                .arg(env.as_str())
                 .arg(repo_dir.to_str().unwrap())
                 .output()
                 .expect("failed to execute CMake");
