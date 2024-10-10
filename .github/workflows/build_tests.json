@@ -46,6 +46,8 @@
     "runs-on": "windows-latest",
     "rust": "stable",
     "target": "aarch64-pc-windows-msvc",
-    "cross": false
+    "cross": false,
+    "build_enabled": true,
+    "best_effort": true
   }
 ]
