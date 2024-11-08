@@ -117,7 +117,8 @@ jobs:
         if: startsWith(runner.os,'macOS')
         run: |
           # openssl, cmake and autoconf already installed
-          brew install zip coreutils automake protobuf
+          # brew install zip coreutils automake protobuf
+          brew install zip coreutils automake
           rustup target add ${{ matrix.builds.target }}
 
       - name: Install macOS-14 missing dependencies - hack
@@ -128,8 +129,32 @@ jobs:
       - name: Install Windows dependencies
         if: startsWith(runner.os,'Windows')
         run: |
-          choco upgrade protoc -y
+          # choco upgrade protoc -y
           rustup target add ${{ matrix.builds.target }}
+
+      - name: Declare Android/iOS envs
+        shell: bash
+        run: |
+          if [[ "${{ matrix.builds.target }}" =~ "android" ]]; then
+            echo "CFLAGS=-DMDB_USE_ROBUST=0" >> $GITHUB_ENV
+            echo "TARGET_PLATFORM=android" >> $GITHUB_ENV
+          elif [[ "${{ matrix.builds.target }}" =~ "ios" ]]; then
+            echo "TARGET_PLATFORM=ios" >> $GITHUB_ENV
+            if [[ "${{ matrix.builds.target }}" =~ "-sim" ]]; then
+              echo "TARGET_SIM=-sim" >> $GITHUB_ENV
+            fi
+          elif [[ "${{ matrix.builds.target }}" =~ "linux-gnu" ]]; then
+            echo "TARGET_PLATFORM=linux" >> $GITHUB_ENV
+          elif [[ "${{ matrix.builds.target }}" =~ "apple-darwin" ]]; then
+            echo "TARGET_PLATFORM=macos" >> $GITHUB_ENV
+          fi
+          # Strip begining
+          tempEnv="${{ matrix.builds.target }}"
+          echo "TARGET_ARCH=${tempEnv/-*/}" >> $GITHUB_ENV
+          # Strip outside of *_X_*
+          tempEnv="${{ matrix.libffis }}"
+          tempEnv=${tempEnv#*_}
+          echo "TARGET_NAME=${tempEnv%_*}" >> $GITHUB_ENV
 
       - name: Cache cargo files and outputs
         if: ${{ ( ! startsWith(github.ref, 'refs/tags/v') ) && ( ! matrix.builds.cross ) && ( env.CARGO_CACHE ) }}

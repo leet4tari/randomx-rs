@@ -51,6 +51,15 @@
     "best_effort": true
   },
   {
+    "name": "apple-ios-x86_64",
+    "runs-on": "macos-latest",
+    "rust": "stable",
+    "target": "x86_64-apple-ios",
+    "cross": false,
+    "build_enabled": true,
+    "best_effort": true
+  },
+  {
     "name": "apple-ios-aarch64",
     "runs-on": "macos-latest",
     "rust": "stable",
@@ -60,10 +69,28 @@
     "best_effort": true
   },
   {
+    "name": "apple-ios-aarch64-sim",
+    "runs-on": "macos-latest",
+    "rust": "stable",
+    "target": "aarch64-apple-ios-sim",
+    "cross": false,
+    "build_enabled": true,
+    "best_effort": true
+  },
+  {
     "name": "linux-android-x86_64",
     "runs-on": "ubuntu-latest",
     "rust": "stable",
     "target": "x86_64-linux-android",
+    "cross": true,
+    "build_enabled": true,
+    "best_effort": true
+  },
+  {
+    "name": "linux-android-aarch64",
+    "runs-on": "ubuntu-latest",
+    "rust": "stable",
+    "target": "aarch64-linux-android",
     "cross": true,
     "build_enabled": true,
     "best_effort": true
