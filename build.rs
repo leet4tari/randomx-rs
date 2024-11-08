@@ -54,7 +54,7 @@ fn main() {
     if host.contains("windows") && target.contains("windows-msvc") {
         let c = Command::new("cmake")
             .arg("-G")
-            .arg("Visual Studio 16 2019")
+            .arg("Visual Studio 17 2022")
             .arg(repo_dir.to_str().unwrap())
             .output()
             .expect("failed to execute CMake");
