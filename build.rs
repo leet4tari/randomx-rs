@@ -71,6 +71,7 @@ fn main() {
         if !success {
             println!("'Visual Studio 17 2022' not found, trying 'Visual Studio 16 2019'");
             match Command::new("cmake")
+                .arg("--fresh")
                 .arg("-G")
                 .arg("Visual Studio 16 2019")
                 .arg(repo_dir.to_str().unwrap())
