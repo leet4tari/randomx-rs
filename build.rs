@@ -26,11 +26,15 @@ use cmake::Config;
 
 #[allow(clippy::too_many_lines)]
 fn main() {
-    // Get the host and target OS
-    let host_os = env::var("CARGO_CFG_TARGET_OS").unwrap_or_else(|_| "unknown".to_string());
-    let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap_or_else(|_| "linux".to_string());
+    // Get the target triple (e.g., x86_64-apple-ios, x86_64-linux-gnu, etc.)
+    let target = env::var("CARGO_CFG_TARGET").unwrap_or_else(|_| "unknown".to_string());
+
+    // Extract the architecture part of the target triple (e.g., "x86_64" from "x86_64-apple-ios")
+    let target_arch = target.split('-').next().unwrap_or("unknown");
 
     // Determine if we are cross-compiling
+    let host_os = env::var("CARGO_CFG_TARGET_OS").unwrap_or_else(|_| "unknown".to_string());
+    let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap_or_else(|_| "linux".to_string());
     let is_cross_compiling = host_os != target_os;
 
     // Configure RandomX and set CMake options
@@ -38,6 +42,8 @@ fn main() {
 
     if is_cross_compiling {
         config.define("CMAKE_CROSSCOMPILING", "TRUE");
+        // Set DARCH to the CPU architecture (extracted from the target triple)
+        config.define("DARCH", target_arch);
     } else {
         config.define("DARCH", "native");
     }
