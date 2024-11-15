@@ -33,13 +33,17 @@ fn main() {
     // Determine if we are cross-compiling
     let is_cross_compiling = host_os != target_os;
 
-    // Conditionally set "DARCH" based on cross-compilation or native build
-    let darch_value = if is_cross_compiling { "cross" } else { "native" };
+    // Configure RandomX and set CMake options
+    let mut config = Config::new(env::var("RANDOMX_DIR").unwrap_or_else(|_| "RandomX".to_string()));
 
-    // Configure RandomX with the appropriate "DARCH" setting
-    let randomx_path = Config::new(env::var("RANDOMX_DIR").unwrap_or_else(|_| "RandomX".to_string()))
-        .define("DARCH", darch_value)
-        .build();
+    if is_cross_compiling {
+        config.define("CMAKE_CROSSCOMPILING", "TRUE");
+    } else {
+        config.define("DARCH", "native");
+    }
+
+    // Build the RandomX configuration
+    let randomx_path = config.build();
 
     // Output linking information
     println!("cargo:rustc-link-search=native={}/lib", randomx_path.display());
