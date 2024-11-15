@@ -26,16 +26,34 @@ use cmake::Config;
 
 #[allow(clippy::too_many_lines)]
 fn main() {
+    // Get the host and target OS
+    let host_os = env::var("CARGO_CFG_TARGET_OS").unwrap_or_else(|_| "unknown".to_string());
+    let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap_or_else(|_| "linux".to_string());
+
+    // Determine if we are cross-compiling
+    let is_cross_compiling = host_os != target_os;
+
+    // Conditionally set "DARCH" based on cross-compilation or native build
+    let darch_value = if is_cross_compiling { "cross" } else { "native" };
+
+    // Configure RandomX with the appropriate "DARCH" setting
     let randomx_path = Config::new(env::var("RANDOMX_DIR").unwrap_or_else(|_| "RandomX".to_string()))
-        .define("DARCH", "native")
+        .define("DARCH", darch_value)
         .build();
+
+    // Output linking information
     println!("cargo:rustc-link-search=native={}/lib", randomx_path.display());
     println!("cargo:rustc-link-lib=static=randomx");
-    let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap_or("linux".to_string());
+
+    //let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap_or("linux".to_string());
+
+    // Determine the appropriate C++ library to link against based on the target OS
     let dylib_name = match target_os.as_str() {
         "macos" | "ios" => "c++",  // macOS and iOS use "c++"
         "windows" => "msvcrt",     // Use MSVC runtime on Windows
         _ => "stdc++",             // Default for other systems (Linux, etc.)
     };
+
+    // Output the dylib linking information
     println!("cargo:rustc-link-lib=dylib={}", dylib_name);
 }
